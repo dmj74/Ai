@@ -36,6 +36,37 @@ jobs:
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build debug APK
+        run: |
+          set +e
+          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee /tmp/build.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Save log and APK to build-logs branch
+        if: always()
+        run: |
+          rm -rf /tmp/logrepo && mkdir -p /tmp/logrepo && cd /tmp/logrepo
+          git init -q
+          git config user.email "ci@titanali"
+          git config user.name "titanali-ci"
+          tail -c 2000000 /tmp/build.log > build.log
+          if [ -f "$GITHUB_WORKSPACE/app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp "$GITHUB_WORKSPACE/app/build/outputs/apk/debug/app-debug.apk" titanali.apk
+          fi
+          git add -A
+          git commit -q -m "build-$(date +%s)"
+          git branch -M main
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/dmj74/Ai.git"
+          git push -q -f origin main:build-logs || echo "log push failed"
+
+      - name: Upload APK artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: titanali-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+      - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK artifact
