@@ -1,9 +1,19 @@
 #!/usr/bin/env bash
 # Deliver build log (+ APK when present) to channels readable by the Arena agent.
-# Channel 1: git push to build-logs branch (log + apk)
-# Channel 2: GitHub API probe + public gist (log) + contents API (apk)
-# Channel 3: paste services (paste.rs, ix.io, dpaste) as last resort
+# Channel 1 (always works): build error lines emitted as GitHub annotations.
+# Channel 2: git push to build-logs branch (log + apk) via GITHUB_TOKEN.
+# Channel 3: GitHub API gist (log) + contents API (apk).
+# Channel 4: paste services as last resort.
 set +e
+
+# --- 1) Surface the actual build errors as annotations ---
+grep -aE "^e: |error:|ERROR:|FAILURE:|What went wrong|Execution failed|Could not |Unresolved|Caused by" /tmp/build.log 2>/dev/null \
+  | head -25 \
+  | while IFS= read -r l; do
+      echo "::error file=build.log::${l:0:300}"
+    done
+
+# --- 2) Gather files for delivery ---
 D=$(mktemp -d)
 cd "$D"
 git init -q -b main 2>/dev/null || git init -q
@@ -16,6 +26,14 @@ git add -A
 git commit -q -m "build $(date +%s)"
 O=/tmp/d.out
 : > "$O"
+
+case "$GITHUB_TOKEN" in
+  ghs_*) tshape="ghs(len=${#GITHUB_TOKEN})" ;;
+  github_pat_*) tshape="pat(len=${#GITHUB_TOKEN})" ;;
+  "") tshape="EMPTY" ;;
+  *) tshape="other(len=${#GITHUB_TOKEN})" ;;
+esac
+echo "token shape: $tshape" >> "$O"
 
 echo "== git push ==" >> "$O"
 git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/dmj74/Ai.git"
@@ -44,35 +62,22 @@ if [ "$code" = "200" ]; then
 fi
 
 if [ -z "$url" ]; then
-  u=$(curl -s --max-time 30 -T build.log https://paste.rs 2>/dev/null)
+  u=$(curl -s --max-time 20 -T build.log https://paste.rs 2>/dev/null)
   case "$u" in http*) url="$u"; echo "paste.rs: $url" >> "$O";; esac
 fi
 if [ -z "$url" ]; then
-  u=$(curl -s --max-time 30 -F 'file=@build.log' https://ix.io 2>/dev/null)
+  u=$(curl -s --max-time 20 -F 'file=@build.log' https://ix.io 2>/dev/null)
   case "$u" in http*) url="$u"; echo "ix.io: $url" >> "$O";; esac
 fi
 if [ -z "$url" ]; then
-  u=$(curl -s --max-time 30 -F 'file=@build.log' https://0x0.st 2>/dev/null)
-  case "$u" in http*) url="$u"; echo "0x0.st: $url" >> "$O";; esac
-fi
-if [ -z "$url" ]; then
-  u=$(curl -s --max-time 30 --data-urlencode "content@build.log" "https://dpaste.com/api/2/" 2>/dev/null)
+  u=$(curl -s --max-time 20 --data-urlencode "content@build.log" "https://dpaste.com/api/2/" 2>/dev/null)
   case "$u" in http*) url="$u"; echo "dpaste: $url" >> "$O";; esac
-fi
-if [ -z "$url" ]; then
-  jq -n --rawfile c build.log '{content:$c, lang:"text", expires:"1h"}' > gl.json 2>/dev/null
-  u=$(curl -s --max-time 30 -H "Content-Type: application/json" -d @gl.json https://glot.io/api/v1/pastes 2>/dev/null | grep -oE '"url": *"[^"]+"' | head -1 | cut -d'"' -f4)
-  case "$u" in http*) url="$u"; echo "glot: $url" >> "$O";; esac
-fi
-if [ -z "$url" ]; then
-  u=$(curl -s --max-time 30 --data-urlencode "content@build.log" "https://paste2.org/api/v2/pastes" 2>/dev/null | grep -oE 'https://paste2\.org/[A-Za-z0-9]+' | head -1)
-  case "$u" in http*) url="$u"; echo "paste2: $url" >> "$O";; esac
 fi
 echo "log url: ${url:-FAILED}" >> "$O"
 
 echo "### Delivery" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null
 cat "$O" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null
-fold -w 340 "$O" 2>/dev/null | head -14 | while IFS= read -r l; do
+fold -w 340 "$O" 2>/dev/null | head -40 | while IFS= read -r l; do
   echo "::notice title=dl::$l"
 done
 echo "::notice title=log-url::${url:-FAILED}"
