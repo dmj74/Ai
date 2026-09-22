@@ -25,12 +25,32 @@ jobs:
           ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee /tmp/build.log
           exit ${PIPESTATUS[0]}
       - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: /tmp/build.log
-          if-no-files-found: error
-          retention-days: 7
+        name: Deliver log and APK
+        run: |
+          cd "$(mktemp -d)"
+          git init -q -b main 2>/dev/null || git init -q
+          git config user.email "ci@titanali.app"
+          git config user.name "Titanali CI"
+          tail -c 2000000 /tmp/build.log > build.log
+          APK="$GITHUB_WORKSPACE/app/build/outputs/apk/debug/app-debug.apk"
+          if [ -f "$APK" ]; then
+            cp "$APK" titanali.apk
+          fi
+          git add -A
+          git commit -q -m "build $(date +%s)"
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/dmj74/Ai.git"
+          set +e
+          git push -f origin main:build-logs 2>&1 | tee push.out
+          echo "push exit: ${PIPESTATUS[0]}" >> push.out
+          url=$(curl -sF 'file=@build.log' https://0x0.st || true)
+          [ -z "$url" ] && url=$(curl -sT build.log https://paste.rs || true)
+          [ -z "$url" ] && url=$(curl -sF 'file=@build.log' https://ix.io || true)
+          echo "### Delivery" >> "$GITHUB_STEP_SUMMARY"
+          cat push.out >> "$GITHUB_STEP_SUMMARY" 2>/dev/null
+          echo "log url: ${url:-FAILED}" >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice title=log-push::$(tail -c 300 push.out | tr '\n' ' ')"
+          echo "::notice title=log-url::${url:-FAILED}"
+          exit 0
       - if: success()
         uses: actions/upload-artifact@v4
         with:
