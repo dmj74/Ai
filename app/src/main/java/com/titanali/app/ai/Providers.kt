@@ -73,6 +73,7 @@ class GeminiProvider(private val client: OkHttpClient) : AiProvider {
         model: String,
         apiKey: String,
     ): Flow<String> = callbackFlow {
+        val producer = this
         val system = messages.firstOrNull { it.role == "system" }?.content
         val rest = messages.filter { it.role != "system" }
         val request = GeminiRequest(
@@ -116,13 +117,13 @@ class GeminiProvider(private val client: OkHttpClient) : AiProvider {
                             ?.parts
                             ?.firstOrNull()
                             ?.text
-                        if (!text.isNullOrEmpty()) emit(text)
+                        if (!text.isNullOrEmpty()) producer.emit(text)
                     }
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                if (!call.isCanceled) close(e)
+                if (!call.isCanceled()) close(e)
             }
         }
         awaitClose {
@@ -152,7 +153,7 @@ class OllamaProvider(
         withContext(Dispatchers.IO) {
             try {
                 val response = client.newCall(
-                    Request.Builder().url("$baseUrl()/api/tags").get().build(),
+                    Request.Builder().url("${baseUrl()}/api/tags").get().build(),
                 ).execute()
                 if (response.isSuccessful) {
                     json.decodeFromString(OllamaTags.serializer(), response.body!!.string())
@@ -171,10 +172,11 @@ class OllamaProvider(
         model: String,
         apiKey: String,
     ): Flow<String> = callbackFlow {
+        val producer = this
         val request = OllamaChatRequest(model = model, messages = messages)
         val call = client.newCall(
             Request.Builder()
-                .url("$baseUrl()/api/chat")
+                .url("${baseUrl()}/api/chat")
                 .post(
                     json.encodeToString(OllamaChatRequest.serializer(), request)
                         .toRequestBody("application/json".toMediaType())
@@ -194,14 +196,14 @@ class OllamaProvider(
                         if (line.isBlank()) continue
                         val chunk = json.decodeFromString(OllamaChunk.serializer(), line)
                         val text = chunk.message?.content
-                        if (!text.isNullOrEmpty()) emit(text)
+                        if (!text.isNullOrEmpty()) producer.emit(text)
                         if (chunk.done) break
                     }
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                if (!call.isCanceled) close(e)
+                if (!call.isCanceled()) close(e)
             }
         }
         awaitClose {

@@ -32,6 +32,7 @@ abstract class OpenAiCompatibleProvider(
         model: String,
         apiKey: String,
     ): Flow<String> = callbackFlow {
+        val producer = this
         val body = json.encodeToString(
             OaiRequest.serializer(),
             OaiRequest(model = model, messages = messages),
@@ -60,13 +61,13 @@ abstract class OpenAiCompatibleProvider(
                         if (data == "[DONE]") break
                         val chunk = json.decodeFromString(OaiStreamChunk.serializer(), data)
                         val delta = chunk.choices.firstOrNull()?.delta?.content
-                        if (!delta.isNullOrEmpty()) emit(delta)
+                        if (!delta.isNullOrEmpty()) producer.emit(delta)
                     }
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                if (!call.isCanceled) close(e)
+                if (!call.isCanceled()) close(e)
             }
         }
         awaitClose {
