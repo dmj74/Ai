@@ -13,7 +13,7 @@ import android.speech.SpeechRecognizer
  */
 class ListenerManager(private val context: Context) {
 
-    private val recognizer: SpeechRecognizer = SpeechRecognizer.create(context)
+    private val recognizer: SpeechRecognizer = newRecognizer(context)
 
     var onPartial: ((String) -> Unit)? = null
     var onFinal: ((String) -> Unit)? = null
@@ -82,6 +82,14 @@ class ListenerManager(private val context: Context) {
         try {
             recognizer.destroy()
         } catch (_: Exception) {
+        }
+    }
+
+    private companion object {
+        // SpeechRecognizer.create(context) via reflection — robust across SDK variants.
+        fun newRecognizer(context: Context): SpeechRecognizer {
+            val method = SpeechRecognizer::class.java.getMethod("create", Context::class.java)
+            return method.invoke(null, context) as SpeechRecognizer
         }
     }
 }
