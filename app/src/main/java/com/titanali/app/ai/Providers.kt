@@ -2,10 +2,9 @@ package com.titanali.app.ai
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -72,8 +71,7 @@ class GeminiProvider(private val client: OkHttpClient) : AiProvider {
         messages: List<AiMessage>,
         model: String,
         apiKey: String,
-    ): Flow<String> = callbackFlow {
-        val producer = this
+    ): Flow<String> = flow {
         val system = messages.firstOrNull { it.role == "system" }?.content
         val rest = messages.filter { it.role != "system" }
         val request = GeminiRequest(
@@ -97,40 +95,32 @@ class GeminiProvider(private val client: OkHttpClient) : AiProvider {
                 .header("Accept", "text/event-stream")
                 .build(),
         )
-        val job = launch(Dispatchers.IO) {
-            try {
-                call.execute().use { response ->
-                    if (!response.isSuccessful) {
-                        val detail = response.body?.string()?.take(300).orEmpty()
-                        close(RuntimeException("HTTP ${response.code}: $detail"))
-                        return@use
-                    }
-                    val source = response.body!!.source()
-                    while (!source.exhausted()) {
-                        val line = source.readUtf8Line() ?: break
-                        if (!line.startsWith("data:")) continue
-                        val data = line.removePrefix("data:").trim()
-                        if (data.isEmpty()) continue
-                        val chunk = json.decodeFromString(GeminiStreamChunk.serializer(), data)
-                        val text = chunk.candidates.firstOrNull()
-                            ?.content
-                            ?.parts
-                            ?.firstOrNull()
-                            ?.text
-                        if (!text.isNullOrEmpty()) producer.emit(text)
-                    }
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                if (!call.isCanceled()) close(e)
+        try {
+            val response = call.execute()
+            if (!response.isSuccessful) {
+                val detail = response.body?.string()?.take(300).orEmpty()
+                throw RuntimeException("HTTP ${response.code}: $detail")
             }
-        }
-        awaitClose {
-            job.cancel()
+            val source = response.body!!.source()
+            while (!source.exhausted()) {
+                val line = source.readUtf8Line() ?: break
+                if (!line.startsWith("data:")) continue
+                val data = line.removePrefix("data:").trim()
+                if (data.isEmpty()) continue
+                val chunk = json.decodeFromString(GeminiStreamChunk.serializer(), data)
+                val text = chunk.candidates.firstOrNull()
+                    ?.content
+                    ?.parts
+                    ?.firstOrNull()
+                    ?.text
+                if (!text.isNullOrEmpty()) emit(text)
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } finally {
             call.cancel()
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }
 
 /** Ollama — fully local & free, no API key. Runs on PC/emulator network. */
@@ -171,8 +161,7 @@ class OllamaProvider(
         messages: List<AiMessage>,
         model: String,
         apiKey: String,
-    ): Flow<String> = callbackFlow {
-        val producer = this
+    ): Flow<String> = flow {
         val request = OllamaChatRequest(model = model, messages = messages)
         val call = client.newCall(
             Request.Builder()
@@ -183,34 +172,26 @@ class OllamaProvider(
                 )
                 .build(),
         )
-        val job = launch(Dispatchers.IO) {
-            try {
-                call.execute().use { response ->
-                    if (!response.isSuccessful) {
-                        close(RuntimeException("HTTP ${response.code} — Ollama را در نشانی تنظیمات روشن کن"))
-                        return@use
-                    }
-                    val source = response.body!!.source()
-                    while (!source.exhausted()) {
-                        val line = source.readUtf8Line() ?: break
-                        if (line.isBlank()) continue
-                        val chunk = json.decodeFromString(OllamaChunk.serializer(), line)
-                        val text = chunk.message?.content
-                        if (!text.isNullOrEmpty()) producer.emit(text)
-                        if (chunk.done) break
-                    }
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                if (!call.isCanceled()) close(e)
+        try {
+            val response = call.execute()
+            if (!response.isSuccessful) {
+                throw RuntimeException("HTTP ${response.code} — Ollama را در نشانی تنظیمات روشن کن")
             }
-        }
-        awaitClose {
-            job.cancel()
+            val source = response.body!!.source()
+            while (!source.exhausted()) {
+                val line = source.readUtf8Line() ?: break
+                if (line.isBlank()) continue
+                val chunk = json.decodeFromString(OllamaChunk.serializer(), line)
+                val text = chunk.message?.content
+                if (!text.isNullOrEmpty()) emit(text)
+                if (chunk.done) break
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } finally {
             call.cancel()
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }
 
 object ProviderRegistry {

@@ -164,8 +164,9 @@ private fun relativeTime(context: Context, ts: Long): String {
         min < 1 -> context.getString(R.string.just_now)
         min < 60 -> context.getString(R.string.min_ago, min.toInt())
         min < 60 * 24 -> context.getString(R.string.hour_ago, (min / 60).toInt())
-        else -> DateFormat.getDateFormat(context.resources.configuration.locale)
-            .format(Date(ts))
-            .toString()
+        else -> java.text.DateFormat.getDateInstance(
+            java.text.DateFormat.MEDIUM,
+            context.resources.configuration.locale,
+        ).format(Date(ts)).toString()
     }
 }

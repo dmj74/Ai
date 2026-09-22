@@ -37,7 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -209,13 +209,6 @@ private fun ModelChip(
                     current.ifBlank { "…" }.take(26),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                )
-            },
-            trailingIcon = {
-                Icon(
-                    Icons.Filled.ExpandMore,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
                 )
             },
         )

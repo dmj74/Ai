@@ -2,10 +2,9 @@ package com.titanali.app.ai
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -31,8 +30,7 @@ abstract class OpenAiCompatibleProvider(
         messages: List<AiMessage>,
         model: String,
         apiKey: String,
-    ): Flow<String> = callbackFlow {
-        val producer = this
+    ): Flow<String> = flow {
         val body = json.encodeToString(
             OaiRequest.serializer(),
             OaiRequest(model = model, messages = messages),
@@ -45,34 +43,26 @@ abstract class OpenAiCompatibleProvider(
             builder.addHeader("Authorization", "Bearer $apiKey")
         }
         val call = client.newCall(builder.build())
-        val job = launch(Dispatchers.IO) {
-            try {
-                call.execute().use { response ->
-                    if (!response.isSuccessful) {
-                        val detail = response.body?.string()?.take(300).orEmpty()
-                        close(RuntimeException("HTTP ${response.code}: $detail"))
-                        return@use
-                    }
-                    val source = response.body!!.source()
-                    while (!source.exhausted()) {
-                        val line = source.readUtf8Line() ?: break
-                        if (!line.startsWith("data:")) continue
-                        val data = line.removePrefix("data:").trim()
-                        if (data == "[DONE]") break
-                        val chunk = json.decodeFromString(OaiStreamChunk.serializer(), data)
-                        val delta = chunk.choices.firstOrNull()?.delta?.content
-                        if (!delta.isNullOrEmpty()) producer.emit(delta)
-                    }
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                if (!call.isCanceled()) close(e)
+        try {
+            val response = call.execute()
+            if (!response.isSuccessful) {
+                val detail = response.body?.string()?.take(300).orEmpty()
+                throw RuntimeException("HTTP ${response.code}: $detail")
             }
-        }
-        awaitClose {
-            job.cancel()
+            val source = response.body!!.source()
+            while (!source.exhausted()) {
+                val line = source.readUtf8Line() ?: break
+                if (!line.startsWith("data:")) continue
+                val data = line.removePrefix("data:").trim()
+                if (data == "[DONE]") break
+                val chunk = json.decodeFromString(OaiStreamChunk.serializer(), data)
+                val delta = chunk.choices.firstOrNull()?.delta?.content
+                if (!delta.isNullOrEmpty()) emit(delta)
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } finally {
             call.cancel()
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }
