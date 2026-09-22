@@ -36,4 +36,6 @@ jobs:
           git commit -q -m "build-$(date +%s)"
           git branch -M main
           git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/dmj74/Ai.git"
+          git push -f origin main:build-logs 2>&1 || true          git branch -M main
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/dmj74/Ai.git"
           git push -f origin main:build-logs 2>&1 || true
