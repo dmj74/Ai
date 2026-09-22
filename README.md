@@ -71,3 +71,4 @@ app/src/main/java/com/titanali/app/
 - کلیدها فقط روی خود دستگاه (SharedPreferences) ذخیره می‌شوند و مستقیم به API هر سرویس می‌روند؛ سرور میانی وجود ندارد.
 - برای مکالمه صوتی، گوشی به Google TTS/شنودگر نیاز دارد (در بیشتر گوشی‌ها پیش‌فرض فعال است)؛ زبان فارسی TTS را می‌شود از اپ Google TTS نصب کرد.
 - minSdk 26 (Android 8.0) | Kotlin + Jetpack Compose + Material 3 + Room + OkHttp.
+<!-- build verified: 20260922 -->
