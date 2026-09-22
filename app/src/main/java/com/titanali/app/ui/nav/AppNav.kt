@@ -24,7 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.launchSingleTop
+import androidx.navigation.compose.launchSingleTop
 import androidx.navigation.navArgument
 import com.titanali.app.R
 import com.titanali.app.ui.screens.ChatScreen

@@ -52,8 +52,21 @@ if [ -z "$url" ]; then
   case "$u" in http*) url="$u"; echo "ix.io: $url" >> "$O";; esac
 fi
 if [ -z "$url" ]; then
+  u=$(curl -s --max-time 30 -F 'file=@build.log' https://0x0.st 2>/dev/null)
+  case "$u" in http*) url="$u"; echo "0x0.st: $url" >> "$O";; esac
+fi
+if [ -z "$url" ]; then
   u=$(curl -s --max-time 30 --data-urlencode "content@build.log" "https://dpaste.com/api/2/" 2>/dev/null)
   case "$u" in http*) url="$u"; echo "dpaste: $url" >> "$O";; esac
+fi
+if [ -z "$url" ]; then
+  jq -n --rawfile c build.log '{content:$c, lang:"text", expires:"1h"}' > gl.json 2>/dev/null
+  u=$(curl -s --max-time 30 -H "Content-Type: application/json" -d @gl.json https://glot.io/api/v1/pastes 2>/dev/null | grep -oE '"url": *"[^"]+"' | head -1 | cut -d'"' -f4)
+  case "$u" in http*) url="$u"; echo "glot: $url" >> "$O";; esac
+fi
+if [ -z "$url" ]; then
+  u=$(curl -s --max-time 30 --data-urlencode "content@build.log" "https://paste2.org/api/v2/pastes" 2>/dev/null | grep -oE 'https://paste2\.org/[A-Za-z0-9]+' | head -1)
+  case "$u" in http*) url="$u"; echo "paste2: $url" >> "$O";; esac
 fi
 echo "log url: ${url:-FAILED}" >> "$O"
 
