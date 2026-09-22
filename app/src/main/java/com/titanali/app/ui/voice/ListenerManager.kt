@@ -13,17 +13,15 @@ import android.speech.SpeechRecognizer
  */
 class ListenerManager(private val context: Context) {
 
-    private var recognizer: SpeechRecognizer? = null
+    private val recognizer: SpeechRecognizer = SpeechRecognizer.create(context)
 
     var onPartial: ((String) -> Unit)? = null
     var onFinal: ((String) -> Unit)? = null
     var onFailed: ((String) -> Unit)? = null
     var stateChanged: ((listening: Boolean) -> Unit)? = null
 
-    private fun ensure() {
-        if (recognizer != null) return
-        val r = SpeechRecognizer.create(context)
-        r.setRecognitionListener(object : RecognitionListener {
+    init {
+        recognizer.setRecognitionListener(object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) {}
             override fun onBeginningOfSpeech() {}
             override fun onRmsChanged(rmsdB: Float) {}
@@ -54,11 +52,9 @@ class ListenerManager(private val context: Context) {
             @Deprecated("Deprecated in Java")
             override fun onEvent(eventType: Int, params: Bundle?) {}
         })
-        recognizer = r
     }
 
     fun start(languageTag: String) {
-        ensure()
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, languageTag)
@@ -66,7 +62,7 @@ class ListenerManager(private val context: Context) {
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
         }
         try {
-            recognizer?.startListening(intent)
+            recognizer.startListening(intent)
             stateChanged?.invoke(true)
         } catch (e: Exception) {
             stateChanged?.invoke(false)
@@ -76,7 +72,7 @@ class ListenerManager(private val context: Context) {
 
     fun cancel() {
         try {
-            recognizer?.cancel()
+            recognizer.cancel()
         } catch (_: Exception) {
         }
         stateChanged?.invoke(false)
@@ -84,9 +80,8 @@ class ListenerManager(private val context: Context) {
 
     fun release() {
         try {
-            recognizer?.destroy()
+            recognizer.destroy()
         } catch (_: Exception) {
         }
-        recognizer = null
     }
 }
