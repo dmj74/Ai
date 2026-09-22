@@ -147,7 +147,7 @@ fun LessonScreen(lang: String, lessonId: String) {
                         fontWeight = FontWeight.Bold,
                     )
                 }
-                items(lesson.vocab.indices) { index ->
+                items(lesson.vocab.size) { index ->
                     val vocab = lesson.vocab[index]
                     val wordId = "${pack.code}:${lesson.id}:$index"
                     val isKnown = state.knownWords.contains(wordId)

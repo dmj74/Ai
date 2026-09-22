@@ -46,33 +46,41 @@ fun AppNav() {
         bottomBar = {
             if (showBottomBar) {
                 NavigationBar {
-                    BottomItem(
-                        route = "home",
+                    NavigationBarItem(
+                        selected = currentRoute == "home",
+                        onClick = {
+                            if (currentRoute != "home") navController.navigate("home") { launchSingleTop = true }
+                        },
                         icon = { Icon(Icons.Filled.Chat, contentDescription = null) },
                         label = { Text(stringResource(R.string.nav_chat)) },
-                        selected = currentRoute == "home",
-                        nav = navController,
+                        alwaysShowLabel = true,
                     )
-                    BottomItem(
-                        route = "titanali",
+                    NavigationBarItem(
+                        selected = currentRoute == "titanali",
+                        onClick = {
+                            if (currentRoute != "titanali") navController.navigate("titanali") { launchSingleTop = true }
+                        },
                         icon = { Icon(Icons.Filled.AutoAwesome, contentDescription = null) },
                         label = { Text(stringResource(R.string.nav_titanali)) },
-                        selected = currentRoute == "titanali",
-                        nav = navController,
+                        alwaysShowLabel = true,
                     )
-                    BottomItem(
-                        route = "learn",
+                    NavigationBarItem(
+                        selected = currentRoute == "learn",
+                        onClick = {
+                            if (currentRoute != "learn") navController.navigate("learn") { launchSingleTop = true }
+                        },
                         icon = { Icon(Icons.Filled.School, contentDescription = null) },
                         label = { Text(stringResource(R.string.nav_learn)) },
-                        selected = currentRoute == "learn",
-                        nav = navController,
+                        alwaysShowLabel = true,
                     )
-                    BottomItem(
-                        route = "settings",
+                    NavigationBarItem(
+                        selected = currentRoute == "settings",
+                        onClick = {
+                            if (currentRoute != "settings") navController.navigate("settings") { launchSingleTop = true }
+                        },
                         icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
                         label = { Text(stringResource(R.string.nav_settings)) },
-                        selected = currentRoute == "settings",
-                        nav = navController,
+                        alwaysShowLabel = true,
                     )
                 }
             }
@@ -115,23 +123,4 @@ fun AppNav() {
     }
 }
 
-@Composable
-private fun BottomItem(
-    route: String,
-    icon: @Composable () -> Unit,
-    label: @Composable () -> Unit,
-    selected: Boolean,
-    nav: NavHostController,
-) {
-    NavigationBarItem(
-        selected = selected,
-        onClick = {
-            if (!selected) {
-                nav.navigate(route) { launchSingleTop = true }
-            }
-        },
-        icon = icon,
-        label = label,
-        alwaysShowLabel = true,
-    )
-}
+
