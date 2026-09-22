@@ -28,7 +28,7 @@ jobs:
           ./gradlew --version
 
       - name: Setup Android SDK
-        uses: andrewsson/setup-android@v3
+        uses: actions/setup-android@v3
 
       - name: Accept licenses & install SDK packages
         run: |
