@@ -1,0 +1,35 @@
+name: Titanali APK
+
+on:
+  push:
+    branches: [arena/01a0ca1e-ai]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: |
+          chmod +x gradlew
+          ./gradlew --version
+      - uses: android-actions/setup-android@v4
+      - run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+      - run: |
+          set +e
+          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee /tmp/build.log
+          exit ${PIPESTATUS[0]}
+      - if: always()
+        run: bash scripts/ci-log-push.sh
+      - if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: titanali-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
