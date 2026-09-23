@@ -198,6 +198,17 @@ fun TitanaliScreen(navController: NavHostController) {
         }
     }
 
+    // A failed AI request does not produce a TTS completion callback. Stop the
+    // recognizer as well, otherwise the voice panel can remain stuck in Idle
+    // while the recognizer is already gone. The inline error remains visible
+    // and the user can retry from the text input.
+    LaunchedEffect(state.error, voiceActive) {
+        if (state.error != null && voiceActive) {
+            stopVoice()
+            notice(context.getString(R.string.voice_ai_error_stopped))
+        }
+    }
+
     LaunchedEffect(state.messages.size, state.isStreaming, state.streamText) {
         val count = state.messages.size + if (state.isStreaming) 1 else 0
         if (count > 0) {

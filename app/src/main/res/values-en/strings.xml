@@ -53,6 +53,7 @@
     <string name="voice_mic_permission">Voice chat needs microphone permission.</string>
     <string name="voice_no_speech">Nothing heard; please try again.</string>
     <string name="voice_unavailable">No speech recognition service is installed on this device.</string>
+    <string name="voice_ai_error_stopped">The AI connection failed, so voice chat was stopped. Please try again.</string>
 
     <!-- learn -->
     <string name="learn_title">Language Learning</string>
