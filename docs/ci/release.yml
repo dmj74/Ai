@@ -35,12 +35,18 @@ jobs:
       - name: Prepare wrapper
         run: chmod +x gradlew
 
-      - name: Unit tests + minified release APK
-        run: ./gradlew :app:testReleaseUnitTest :app:assembleRelease --no-daemon --stacktrace
+      - name: Unit tests + APKs
+        run: ./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease --no-daemon --stacktrace
+
+      - name: Name the installable APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk "titanali-${GITHUB_REF_NAME}.apk"
 
       - name: Publish GitHub release with APK
         uses: softprops/action-gh-release@v2
         with:
+          # The debug-signed APK installs directly on phones; the unsigned
+          # release APK is attached for anyone who wants to sign it themselves.
           files: |
+            titanali-*.apk
             app/build/outputs/apk/release/app-release-unsigned.apk
           generate_release_notes: true
