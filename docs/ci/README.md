@@ -1,29 +1,22 @@
-# پیشنهاد بازسازی CI / Proposed CI setup
+# CI / CD
 
-فایلهای این پوشه، جایگزین تمیزِ سه ورک‌فلوی تکراری فعلی (`.github/workflows/main.yml`، `build-apk.yml`، `titanali.yml`) هستند.
+## وضعیت
 
-## چرا الان داخل `.github/workflows/` نیستند؟
+- ✅ `.github/workflows/ci.yml` **فعال است** — روی هر push (main و شاخه‌های `arena/**`) و هر PR:
+  APK دیباگ → آپلود artifact `titanali-debug-apk` → تست‌های واحد → APK ریلیز مینیفای‌شده (فقط بررسی) → lint (گزارشی).
+  اولین اجرا: موفق (run 35910573256).
+- ⏸ `docs/ci/release.yml` — انتشار APK در GitHub Releases روی تگ `v*`. برای فعال‌سازی آن را به `.github/workflows/release.yml` منتقل کنید.
 
-توکن این نشستِ Arena دسترسی `workflows` را ندارد، بنابراین تغییر هر فایل زیرِ `.github/workflows/` توسط ربات ممنوع است. برای فعال‌سازی:
+## ورک‌فلوهای قدیمی
 
-1. در تنظیمات GitHub App مربوطه، دسترسی **Repository permissions → Workflows = Read & write** را بدهید،
-2. یا خودتان این دو فایل را جابه‌جا کنید:
+`main.yml`، `build-apk.yml` و `titanali.yml` فقط روی شاخهٔ قدیمی `arena/01a0ca1e-ai` اجرا می‌شوند و روی این شاخه/`main` کاری نمی‌کنند.
+پیشنهاد می‌شود (توسط کسی که دسترسی workflows دارد) حذف شوند:
 
 ```bash
 git rm .github/workflows/main.yml .github/workflows/build-apk.yml .github/workflows/titanali.yml
-git mv docs/ci/ci.yml .github/workflows/ci.yml
-git mv docs/ci/release.yml .github/workflows/release.yml
-git commit -m "ci: switch to single clean pipeline"
+git commit -m "ci: remove legacy workflows"
 ```
 
-## چه چیزی تغییر می‌کند؟
+## دریافت APK
 
-- یک ورک‌فلوی `ci.yml`: روی هر push (main و شاخه‌های arena) و هر PR → تست‌های واحد + APK دیباگ + APK ریلیز مینیفای‌شده + lint گزارشی + آپلود artifact.
-- یک ورک‌فلوی `release.yml`: روی تگ `v*` → انتشار APK در GitHub Releases.
-- حذف push خودکار لاگ/APK به شاخهٔ `build-logs` و آپلود لاگ به gist/paste (که در اسکریپت‌های قدیمی وجود داشت و ریسک افشای لاگ داشت).
-
-تا زمانی که این جابه‌جایی انجام نشده، برای ساختِ هر پوش می‌توان ورک‌فلوی فعلی را دستی روی همان شاخه اجرا کرد:
-
-```bash
-gh workflow run main.yml --ref <branch>
-```
+Actions → CI → آخرین اجرا → Artifacts → `titanali-debug-apk` (zip حاوی `app-debug.apk`).
