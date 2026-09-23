@@ -35,7 +35,7 @@
 
 | سرویس | دریافت کلید رایگان | مدل‌های پیشنهادی (۲۰۲۶) |
 |---|---|---|
-| **Pollinations** (پیشنهادی — بدون کلید) | برای استفادهٔ پایه کلید لازم نیست؛ [کلید اختیاری](https://enter.pollinations.ai/keys) | `openai-fast` |
+| **Pollinations** (پیشنهادی — بدون کلید) | برای استفادهٔ پایه کلید لازم نیست؛ [کلید اختیاری](https://enter.pollinations.ai/keys)؛ در خطای موقت به LLM7 می‌رود | `openai-fast` |
 | **LLM7** (بدون ثبت‌نام) | [توکن رایگان اختیاری](https://token.llm7.io/) | `mistral-Nemo-Instruct-2407`، `minimax-m2.7` |
 | **Groq** (خیلی سریع) | [console.groq.com/keys](https://console.groq.com/keys) | `openai/gpt-oss-120b`، `openai/gpt-oss-20b` |
 | **Google Gemini** | [aistudio.google.com](https://aistudio.google.com/app/apikey) | `gemini-2.5-flash`، `gemini-2.5-flash-lite` |

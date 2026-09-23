@@ -196,7 +196,10 @@ class MistralProvider(client: OkHttpClient) :
  * The legacy endpoint is intentionally used here: it is the currently
  * documented keyless mobile-friendly endpoint, unlike the newer paid gateway.
  */
-class PollinationsProvider(private val http: OkHttpClient) :
+class PollinationsProvider(
+    private val http: OkHttpClient,
+    private val fallback: AiProvider? = null,
+) :
     OpenAiCompatibleProvider(
         id = "pollinations",
         name = "Pollinations (no key)",
@@ -208,6 +211,34 @@ class PollinationsProvider(private val http: OkHttpClient) :
         modelsUrl = "https://text.pollinations.ai/models",
         client = http,
     ) {
+
+    /**
+     * Keep the no-key default useful when its shared anonymous quota is full.
+     * We only fail over before the first token, so a partially streamed answer
+     * is never duplicated. The fallback uses no stored key.
+     */
+    override suspend fun streamChat(
+        messages: List<AiMessage>,
+        model: String,
+        apiKey: String,
+    ): Flow<String> = flow {
+        var emitted = false
+        try {
+            super.streamChat(messages, model, apiKey).collect { token ->
+                emitted = true
+                emit(token)
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (primaryError: Exception) {
+            if (emitted || fallback == null) throw primaryError
+            fallback.streamChat(
+                messages = messages,
+                model = fallback.defaultModels.firstOrNull().orEmpty(),
+                apiKey = "",
+            ).collect { emit(it) }
+        }
+    }
 
     /** The legacy model catalogue is a JSON array, not an OpenAI object. */
     override suspend fun listModels(apiKey: String): List<String> =
@@ -450,15 +481,19 @@ class OllamaProvider(
 }
 
 object ProviderRegistry {
-    fun create(http: OkHttpClient, ollamaHost: () -> String): Map<String, AiProvider> = linkedMapOf(
-        "pollinations" to PollinationsProvider(http),
-        "llm7" to Llm7Provider(http),
-        "groq" to GroqProvider(http),
-        "gemini" to GeminiProvider(http),
-        "openrouter" to OpenRouterProvider(http),
-        "huggingface" to HuggingFaceProvider(http),
-        "cerebras" to CerebrasProvider(http),
-        "mistral" to MistralProvider(http),
-        "ollama" to OllamaProvider(http, ollamaHost),
-    )
+    fun create(http: OkHttpClient, ollamaHost: () -> String): Map<String, AiProvider> {
+        val llm7 = Llm7Provider(http)
+        val pollinations = PollinationsProvider(http, fallback = llm7)
+        return linkedMapOf(
+            "pollinations" to pollinations,
+            "llm7" to llm7,
+            "groq" to GroqProvider(http),
+            "gemini" to GeminiProvider(http),
+            "openrouter" to OpenRouterProvider(http),
+            "huggingface" to HuggingFaceProvider(http),
+            "cerebras" to CerebrasProvider(http),
+            "mistral" to MistralProvider(http),
+            "ollama" to OllamaProvider(http, ollamaHost),
+        )
+    }
 }
