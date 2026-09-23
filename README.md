@@ -12,7 +12,7 @@
 | 🤖 **تیتانالی** | کارکتر هوش مصنوعی با شخصیت صمیمی، باهوش و بامزه — دو حالت: **چت متنی** و **مکالمهٔ صوتی** (شنود → فکر → پاسخ با صدا، به‌صورت حلقهٔ پیوسته) |
 | 🌍 **آنالیز کامل از داده‌های جهانی** | سوئیچ در تنظیمات؛ پاسخ‌ها با ساختار کامل: پاسخ مستقیم، آمار و ارقام، علل، روند، مقایسهٔ جهانی، دیدگاه‌های مختلف، نتیجه‌گیری |
 | 📚 **آموزش زبان** | ۳ زبان (انگلیسی، آلمانی، عربی) با سطوح A1–A2، فلش‌کارت واژگان با نمونه‌جمله، گرامر دوزبانه، کلمهٔ روز، پیشرفت «یاد گرفتم» و **تمرین مکالمه با معلم AI** که اشتباهاتت را اصلاح می‌کند |
-| 🔌 **هفت بک‌اند هوش مصنوعی** | Groq، Google Gemini، OpenRouter، Hugging Face، Cerebras، Mistral و Ollama (کاملاً محلی) — کلید رایگان هرکدام از صفحهٔ تنظیمات |
+| 🔌 **۹ بک‌اند هوش مصنوعی** | Pollinations و LLM7 بدون کلید، به‌علاوهٔ Groq، Google Gemini، OpenRouter، Hugging Face، Cerebras، Mistral و Ollama (کاملاً محلی) |
 | 🧪 **آزمایش اتصال** | دکمهٔ «آزمایش اتصال» در تنظیمات، کلید/مدل/نت را با یک درخواست واقعی بررسی می‌کند؛ فهرست مدل‌ها هم به‌صورت زنده از خود سرویس گرفته می‌شود |
 | 🗣️ **صوت** | TTS و STT بدون هزینه از امکانات خود اندروید؛ زبان فارسی/انگلیسی و سرعت صدا قابل تنظیم |
 | 🌐 **دوزبانه** | رابط فارسی (راست‌چین) + انگلیسی، قابل تغییر در تنظیمات |
@@ -21,7 +21,7 @@
 ## دانلود APK
 
 - **هر پوش به مخزن**: از تب **Actions → CI → آخرین اجرا → Artifacts** فایل `titanali-debug-apk` را بگیر.
-- **نسخهٔ رسمی**: با تگ `v*` (مثلاً `v1.1.0`) ورک‌فلو **Release** یک APK مینیفای‌شده روی صفحهٔ Releases منتشر می‌کند.
+- **نسخهٔ رسمی**: با تگ `v*` (مثلاً `v1.2.0`) ورک‌فلو **Release** یک APK مینیفای‌شده روی صفحهٔ Releases منتشر می‌کند.
 
 ## ساخت اپ
 
@@ -35,7 +35,9 @@
 
 | سرویس | دریافت کلید رایگان | مدل‌های پیشنهادی (۲۰۲۶) |
 |---|---|---|
-| **Groq** (پیشنهادی — خیلی سریع) | [console.groq.com/keys](https://console.groq.com/keys) | `openai/gpt-oss-120b`، `openai/gpt-oss-20b` |
+| **Pollinations** (پیشنهادی — بدون کلید) | برای استفادهٔ پایه کلید لازم نیست؛ [کلید اختیاری](https://enter.pollinations.ai/keys) | `openai-fast` |
+| **LLM7** (بدون ثبت‌نام) | [توکن رایگان اختیاری](https://token.llm7.io/) | `mistral-Nemo-Instruct-2407`، `minimax-m2.7` |
+| **Groq** (خیلی سریع) | [console.groq.com/keys](https://console.groq.com/keys) | `openai/gpt-oss-120b`، `openai/gpt-oss-20b` |
 | **Google Gemini** | [aistudio.google.com](https://aistudio.google.com/app/apikey) | `gemini-2.5-flash`، `gemini-2.5-flash-lite` |
 | **OpenRouter** (مدل‌های `:free`) | [openrouter.ai/keys](https://openrouter.ai/keys) | `openrouter/free` (انتخاب خودکار مدل رایگان) |
 | **Hugging Face** | [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) | `meta-llama/Llama-3.3-70B-Instruct` |
@@ -46,6 +48,8 @@
 برای Ollama: نشانی را در تنظیمات بنویس — امولاتور: `http://10.0.2.2:11434`؛ گوشی واقعی: IP کامپیوتر مثل `http://192.168.1.10:11434`.
 
 > نکته: کلید و مدل **به‌تفکیک هر سرویس** ذخیره می‌شود؛ یعنی با سوییچ بین سرویس‌ها هیچ چیزی گم نمی‌شود.
+>
+> برای حفظ امنیت، هیچ کلید خصوصی داخل APK یا مخزن قرار نگرفته است. دو گزینهٔ اول بدون کلید کار می‌کنند؛ کلیدهای سرویس‌های دیگر شخصی هستند و باید از لینک رسمی داخل تنظیمات ساخته و فقط روی دستگاه خودت وارد شوند.
 
 ## شخصیت تیتانالی
 
@@ -61,7 +65,7 @@ app/src/main/java/com/titanali/app/
 │   ├── AiProvider.kt         # رابط مشترک (کلید/مدل/مدل‌های زنده)
 │   ├── AiErrors.kt           # نگاشت خطاها به کلیدهای قابل ترجمه
 │   ├── SseParser.kt          # تجزیهٔ SSE/NDJSON (خالص و تست‌پذیر)
-│   ├── Providers.kt          # ۷ سرویس + registry
+│   ├── Providers.kt          # ۹ سرویس + registry
 │   ├── AiTypes.kt            # DTOها
 │   └── Prompts.kt            # پرامپت‌ها: آنالیز جهانی + شخصیت تیتانالی + معلم زبان
 ├── data/
@@ -94,4 +98,4 @@ app/src/test/                 # تست‌های واحد JVM (پارسر، خط�
 
 ## Titanali (English summary)
 
-An Android AI companion app: streaming chat with history, a voiced Persian-speaking character ("Titanali") with a continuous listen→think→speak loop, a language-learning section (EN/DE/AR lessons, flashcards, AI tutor practice), and seven free AI backends (Groq, Gemini, OpenRouter, Hugging Face, Cerebras, Mistral, local Ollama). Keys stay on-device. Built with Kotlin, Jetpack Compose (Material 3), Room and OkHttp; unit-tested and CI-built on GitHub Actions.
+An Android AI companion app: streaming chat with history, a voiced Persian-speaking character ("Titanali") with a continuous listen→think→speak loop, a language-learning section (EN/DE/AR lessons, flashcards, AI tutor practice), and nine free AI backends (keyless Pollinations and LLM7, plus Groq, Gemini, OpenRouter, Hugging Face, Cerebras, Mistral, and local Ollama). Keys stay on-device. Built with Kotlin, Jetpack Compose (Material 3), Room and OkHttp; unit-tested and CI-built on GitHub Actions.

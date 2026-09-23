@@ -21,6 +21,7 @@ abstract class OpenAiCompatibleProvider(
     override val name: String,
     private val endpoint: String,
     override val needsKey: Boolean = true,
+    override val keyOptional: Boolean = false,
     override val defaultModels: List<String> = emptyList(),
     override val keyUrl: String? = null,
     override val modelsUrl: String? = null,
@@ -40,23 +41,41 @@ abstract class OpenAiCompatibleProvider(
             .url(endpoint)
             .post(body.toRequestBody("application/json".toMediaType()))
             .header("Accept", "text/event-stream")
-        if (needsKey && apiKey.isNotBlank()) {
+        if ((needsKey || keyOptional) && apiKey.isNotBlank()) {
             builder.addHeader("Authorization", "Bearer $apiKey")
         }
         val call = client.newCall(builder.build())
         try {
-            val response = call.execute()
-            if (!response.isSuccessful) {
-                val detail = response.body?.string()?.take(300).orEmpty()
-                throw AiHttpException(response.code, detail)
-            }
-            val source = response.body!!.source()
-            while (!source.exhausted()) {
-                val line = source.readUtf8Line() ?: break
-                val payload = SseParser.dataPayload(line) ?: continue
-                if (SseParser.isDone(payload)) break
-                val delta = SseParser.openAiDelta(payload)
-                if (delta != null) emit(delta)
+            call.execute().use { response ->
+                if (!response.isSuccessful) {
+                    val detail = response.body?.string()?.take(300).orEmpty()
+                    throw AiHttpException(response.code, detail)
+                }
+                val source = response.body!!.source()
+                val raw = StringBuilder()
+                var emitted = false
+                while (!source.exhausted()) {
+                    val line = source.readUtf8Line() ?: break
+                    raw.append(line).append('\n')
+                    val payload = SseParser.dataPayload(line) ?: continue
+                    if (SseParser.isDone(payload)) break
+                    // Most providers send delta chunks. A few free gateways ignore
+                    // stream=true and return one complete JSON response instead;
+                    // accepting both keeps the provider contract reliable.
+                    val text = SseParser.openAiDelta(payload)
+                        ?: SseParser.openAiMessage(payload)
+                    if (text != null) {
+                        emitted = true
+                        emit(text)
+                    }
+                }
+                if (!emitted) {
+                    SseParser.openAiMessage(raw.toString())?.let {
+                        emitted = true
+                        emit(it)
+                    }
+                }
+                if (!emitted) throw AiEmptyReplyException()
             }
         } catch (e: CancellationException) {
             throw e
@@ -70,7 +89,7 @@ abstract class OpenAiCompatibleProvider(
         return withContext(Dispatchers.IO) {
             try {
                 val builder = Request.Builder().url(url).get()
-                if (needsKey && apiKey.isNotBlank()) {
+                if ((needsKey || keyOptional) && apiKey.isNotBlank()) {
                     builder.addHeader("Authorization", "Bearer $apiKey")
                 }
                 client.newCall(builder.build()).execute().use { response ->
@@ -170,6 +189,100 @@ class MistralProvider(client: OkHttpClient) :
         modelsUrl = "https://api.mistral.ai/v1/models",
         client = client,
     )
+
+/**
+ * Pollinations — anonymous text generation; no account or API key is required
+ * for the basic model. A personal key is optional and can improve limits.
+ * The legacy endpoint is intentionally used here: it is the currently
+ * documented keyless mobile-friendly endpoint, unlike the newer paid gateway.
+ */
+class PollinationsProvider(private val http: OkHttpClient) :
+    OpenAiCompatibleProvider(
+        id = "pollinations",
+        name = "Pollinations (no key)",
+        endpoint = "https://text.pollinations.ai/openai",
+        needsKey = false,
+        keyOptional = true,
+        defaultModels = listOf("openai-fast"),
+        keyUrl = "https://enter.pollinations.ai/keys",
+        modelsUrl = "https://text.pollinations.ai/models",
+        client = http,
+    ) {
+
+    /** The legacy model catalogue is a JSON array, not an OpenAI object. */
+    override suspend fun listModels(apiKey: String): List<String> =
+        withContext(Dispatchers.IO) {
+            try {
+                val builder = Request.Builder().url(modelsUrl!!).get()
+                if (apiKey.isNotBlank()) {
+                    builder.addHeader("Authorization", "Bearer $apiKey")
+                }
+                http.newCall(builder.build()).execute().use { response ->
+                    if (!response.isSuccessful) return@withContext defaultModels
+                    val body = response.body?.string().orEmpty()
+                    val root = SseParser.json.parseToJsonElement(body)
+                    val array = root as? kotlinx.serialization.json.JsonArray
+                    val names = array.orEmpty().mapNotNull { entry ->
+                        try {
+                            when (entry) {
+                                is kotlinx.serialization.json.JsonObject ->
+                                    entry["name"]?.let { value ->
+                                        (value as? kotlinx.serialization.json.JsonPrimitive)?.content
+                                    }
+                                is kotlinx.serialization.json.JsonPrimitive -> entry.content
+                                else -> null
+                            }
+                        } catch (_: Exception) {
+                            null
+                        }
+                    }.filter { it.isNotBlank() }
+                    names.ifEmpty { defaultModels }
+                }
+            } catch (_: Exception) {
+                defaultModels
+            }
+        }
+}
+
+/**
+ * LLM7 — an OpenAI-compatible anonymous/turbo tier. A free token is optional;
+ * the provider can be used without putting a secret in the app or repository.
+ */
+class Llm7Provider(private val http: OkHttpClient) :
+    OpenAiCompatibleProvider(
+        id = "llm7",
+        name = "LLM7 (no signup)",
+        endpoint = "https://api.llm7.io/v1/chat/completions",
+        needsKey = false,
+        keyOptional = true,
+        defaultModels = listOf("mistral-Nemo-Instruct-2407", "minimax-m2.7"),
+        keyUrl = "https://token.llm7.io/",
+        modelsUrl = "https://api.llm7.io/v1/models",
+        client = http,
+    ) {
+
+    override suspend fun listModels(apiKey: String): List<String> =
+        withContext(Dispatchers.IO) {
+            try {
+                val builder = Request.Builder().url(modelsUrl!!).get()
+                if (apiKey.isNotBlank()) {
+                    builder.addHeader("Authorization", "Bearer $apiKey")
+                }
+                http.newCall(builder.build()).execute().use { response ->
+                    if (!response.isSuccessful) return@withContext defaultModels
+                    val body = response.body?.string().orEmpty()
+                    val payload = SseParser.json.decodeFromString(OaiModels.serializer(), body)
+                    val freeChat = payload.data
+                        .filter { it.modelType == "chat" && it.tier == "turbo" }
+                        .mapNotNull { it.id }
+                        .filter { it.isNotBlank() }
+                    freeChat.ifEmpty { defaultModels }
+                }
+            } catch (_: Exception) {
+                defaultModels
+            }
+        }
+}
 
 /** Google Gemini — generous free tier on AI Studio. Key: https://aistudio.google.com/app/apikey */
 class GeminiProvider(private val client: OkHttpClient) : AiProvider {
@@ -338,6 +451,8 @@ class OllamaProvider(
 
 object ProviderRegistry {
     fun create(http: OkHttpClient, ollamaHost: () -> String): Map<String, AiProvider> = linkedMapOf(
+        "pollinations" to PollinationsProvider(http),
+        "llm7" to Llm7Provider(http),
         "groq" to GroqProvider(http),
         "gemini" to GeminiProvider(http),
         "openrouter" to OpenRouterProvider(http),

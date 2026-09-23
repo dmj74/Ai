@@ -30,6 +30,28 @@ class SseParserTest {
     }
 
     @Test
+    fun `openAiDelta also accepts reasoning content from free gateways`() {
+        val chunk = """{"choices":[{"delta":{"reasoning_content":"فکر"}}]}"""
+        assertEquals("فکر", SseParser.openAiDelta(chunk))
+    }
+
+    @Test
+    fun `OpenAI request keeps stream flag in JSON`() {
+        val json = SseParser.json.encodeToString(
+            OaiRequest.serializer(),
+            OaiRequest("openai-fast", listOf(AiMessage("user", "hi"))),
+        )
+        assertTrue(json.contains("\"stream\":true"))
+    }
+
+    @Test
+    fun `complete OpenAI response is accepted when gateway ignores streaming`() {
+        val body = """{"choices":[{"message":{"role":"assistant","content":"پاسخ کامل"}}]}"""
+        assertEquals("پاسخ کامل", SseParser.openAiMessage(body))
+        assertNull(SseParser.openAiMessage("not json"))
+    }
+
+    @Test
     fun `openAiDelta ignores empty and malformed chunks`() {
         assertNull(SseParser.openAiDelta("""{"choices":[{"delta":{}}]}"""))
         assertNull(SseParser.openAiDelta("not json"))

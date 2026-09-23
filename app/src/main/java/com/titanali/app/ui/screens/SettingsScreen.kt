@@ -144,6 +144,22 @@ fun SettingsScreen() {
                 }
             }
 
+            if (currentProvider?.needsKey == false) {
+                item {
+                    Text(
+                        stringResource(
+                            if (s.provider == "ollama") {
+                                R.string.settings_local_no_key_desc
+                            } else {
+                                R.string.settings_no_key_desc
+                            },
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            }
+
             item {
                 OutlinedTextField(
                     value = keyText,
@@ -151,7 +167,17 @@ fun SettingsScreen() {
                         keyText = newKey
                         app.settings.setKey(s.provider, newKey)
                     },
-                    label = { Text(stringResource(R.string.settings_api_key)) },
+                    label = {
+                        Text(
+                            stringResource(
+                                if (currentProvider?.keyOptional == true) {
+                                    R.string.settings_api_key_optional
+                                } else {
+                                    R.string.settings_api_key
+                                },
+                            ),
+                        )
+                    },
                     placeholder = { Text(stringResource(R.string.settings_api_key_hint)) },
                     singleLine = true,
                     visualTransformation = if (keyVisible) {
@@ -167,7 +193,7 @@ fun SettingsScreen() {
                             )
                         }
                     },
-                    enabled = currentProvider?.needsKey == true,
+                    enabled = currentProvider?.needsKey == true || currentProvider?.keyOptional == true,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }

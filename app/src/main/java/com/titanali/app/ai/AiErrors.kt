@@ -8,6 +8,9 @@ import java.net.UnknownHostException
 class AiHttpException(val status: Int, detail: String) :
     RuntimeException("HTTP $status $detail")
 
+/** Thrown when a provider closes the stream without producing any text. */
+class AiEmptyReplyException : RuntimeException("empty reply")
+
 /**
  * Maps transport/HTTP failures to stable, localizable error keys.
  * The UI turns these keys into translated strings (see `R.string.err_*`);
@@ -21,11 +24,13 @@ object AiErrors {
     const val SERVER = "err_server"
     const val NETWORK = "err_network"
     const val TIMEOUT = "err_timeout"
+    const val EMPTY = "err_empty"
     const val UNKNOWN = "unknown"
     const val HTTP_PREFIX = "http:"
 
     fun keyFor(throwable: Throwable): String = when (throwable) {
         is AiHttpException -> keyForStatus(throwable.status)
+        is AiEmptyReplyException -> EMPTY
         is SocketTimeoutException -> TIMEOUT
         is UnknownHostException -> NETWORK
         is IOException -> NETWORK

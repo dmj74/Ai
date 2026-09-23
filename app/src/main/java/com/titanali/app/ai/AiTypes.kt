@@ -1,5 +1,6 @@
 package com.titanali.app.ai
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /** Chat message sent to / received from any provider. */
@@ -32,6 +33,18 @@ data class OaiChoice(
 @Serializable
 data class OaiDelta(
     val content: String? = null,
+    @SerialName("reasoning_content") val reasoningContent: String? = null,
+)
+
+/** A complete, non-streaming chat completion (fallback path). */
+@Serializable
+data class OaiCompletion(
+    val choices: List<OaiCompletionChoice> = emptyList(),
+)
+
+@Serializable
+data class OaiCompletionChoice(
+    val message: OaiDelta? = null,
 )
 
 /** Response of a `GET /models` listing endpoint. */
@@ -43,6 +56,20 @@ data class OaiModels(
 @Serializable
 data class OaiModelInfo(
     val id: String? = null,
+    /** LLM7: `turbo` models are the anonymous/free ones. */
+    val tier: String? = null,
+    /** LLM7: `chat`, `image`, `video`… */
+    @SerialName("model_type") val modelType: String? = null,
+)
+
+// ---------- Pollinations (keyless) ----------
+
+/** One entry of `GET https://text.pollinations.ai/models` (a bare JSON array). */
+@Serializable
+data class PollinationsModel(
+    val name: String? = null,
+    val tier: String? = null,
+    val aliases: List<String> = emptyList(),
 )
 
 // ---------- Google Gemini ----------

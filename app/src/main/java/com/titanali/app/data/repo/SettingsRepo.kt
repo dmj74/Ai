@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class SettingsRepo(context: Context) {
 
     data class Settings(
-        val provider: String = "groq",
+        val provider: String = "pollinations",
         val ollamaHost: String = "http://10.0.2.2:11434",
         val deepAnalysis: Boolean = true,
         val titanaliVoice: Boolean = true,
@@ -56,13 +56,13 @@ class SettingsRepo(context: Context) {
     }
 
     private fun legacyFor(prefName: String, providerId: String): String {
-        val legacyProvider = prefs.getString("provider", "groq") ?: "groq"
+        val legacyProvider = prefs.getString("provider", "pollinations") ?: "pollinations"
         if (legacyProvider != providerId) return ""
         return prefs.getString(prefName, "") ?: ""
     }
 
     private fun load(): Settings = Settings(
-        provider = prefs.getString("provider", "groq") ?: "groq",
+        provider = prefs.getString("provider", "pollinations") ?: "pollinations",
         ollamaHost = prefs.getString("ollamaHost", "http://10.0.2.2:11434") ?: "http://10.0.2.2:11434",
         deepAnalysis = prefs.getBoolean("deepAnalysis", true),
         titanaliVoice = prefs.getBoolean("titanaliVoice", true),

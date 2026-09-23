@@ -24,6 +24,7 @@ class AiErrorsTest {
         assertEquals(AiErrors.TIMEOUT, AiErrors.keyFor(SocketTimeoutException("t")))
         assertEquals(AiErrors.NETWORK, AiErrors.keyFor(UnknownHostException("x")))
         assertEquals(AiErrors.NETWORK, AiErrors.keyFor(IOException("x")))
+        assertEquals(AiErrors.EMPTY, AiErrors.keyFor(AiEmptyReplyException()))
         assertEquals(AiErrors.UNKNOWN, AiErrors.keyFor(RuntimeException("x")))
     }
 }

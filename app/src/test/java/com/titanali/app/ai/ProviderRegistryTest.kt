@@ -14,7 +14,17 @@ class ProviderRegistryTest {
     @Test
     fun `registry exposes all advertised backends`() {
         assertEquals(
-            listOf("groq", "gemini", "openrouter", "huggingface", "cerebras", "mistral", "ollama"),
+            listOf(
+                "pollinations",
+                "llm7",
+                "groq",
+                "gemini",
+                "openrouter",
+                "huggingface",
+                "cerebras",
+                "mistral",
+                "ollama",
+            ),
             providers.keys.toList(),
         )
     }
@@ -27,6 +37,15 @@ class ProviderRegistryTest {
                 assertTrue("${p.id} exposes a key page", !p.keyUrl.isNullOrBlank())
             }
         }
+    }
+
+    @Test
+    fun `anonymous providers do not require a key`() {
+        assertFalse(providers.getValue("pollinations").needsKey)
+        assertTrue(providers.getValue("pollinations").keyOptional)
+        assertEquals("openai-fast", providers.getValue("pollinations").defaultModels.first())
+        assertFalse(providers.getValue("llm7").needsKey)
+        assertTrue(providers.getValue("llm7").keyOptional)
     }
 
     @Test

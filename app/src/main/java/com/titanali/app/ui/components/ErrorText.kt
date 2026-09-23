@@ -17,6 +17,7 @@ fun aiErrorText(key: String): String = when (key) {
     AiErrors.SERVER -> stringResource(R.string.err_server)
     AiErrors.NETWORK -> stringResource(R.string.err_network)
     AiErrors.TIMEOUT -> stringResource(R.string.err_timeout)
+    AiErrors.EMPTY -> stringResource(R.string.err_empty)
     AiErrors.UNKNOWN -> stringResource(R.string.unknown_error)
     else -> if (key.startsWith(AiErrors.HTTP_PREFIX)) {
         stringResource(
