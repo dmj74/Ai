@@ -42,6 +42,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,14 +72,16 @@ fun SettingsScreen() {
     var keyVisible by remember { mutableStateOf(false) }
     var modelExpanded by remember { mutableStateOf(false) }
     val currentProvider = app.providers[s.provider]
-    val apiKey = app.settings.keyFor(s.provider)
-    val currentModel = app.settings.modelFor(
-        s.provider,
-        currentProvider?.defaultModels?.firstOrNull().orEmpty(),
-    )
+    var keyText by rememberSaveable { mutableStateOf("") }
+    var modelText by rememberSaveable { mutableStateOf("") }
     val models = vmState.models.ifEmpty { currentProvider?.defaultModels ?: emptyList() }
 
     LaunchedEffect(s.provider) {
+        keyText = app.settings.keyFor(s.provider)
+        modelText = app.settings.modelFor(
+            s.provider,
+            currentProvider?.defaultModels?.firstOrNull().orEmpty(),
+        )
         vm.refreshModels(s.provider)
         vm.clearTest()
     }
@@ -143,8 +146,11 @@ fun SettingsScreen() {
 
             item {
                 OutlinedTextField(
-                    value = apiKey,
-                    onValueChange = { newKey -> app.settings.setKey(s.provider, newKey) },
+                    value = keyText,
+                    onValueChange = { newKey ->
+                        keyText = newKey
+                        app.settings.setKey(s.provider, newKey)
+                    },
                     label = { Text(stringResource(R.string.settings_api_key)) },
                     placeholder = { Text(stringResource(R.string.settings_api_key_hint)) },
                     singleLine = true,
@@ -172,8 +178,9 @@ fun SettingsScreen() {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     OutlinedTextField(
-                        value = currentModel,
+                        value = modelText,
                         onValueChange = { newModel ->
+                            modelText = newModel
                             app.settings.setModel(s.provider, newModel)
                         },
                         label = { Text(stringResource(R.string.settings_model)) },
@@ -197,6 +204,7 @@ fun SettingsScreen() {
                                         Text(m, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                     },
                                     onClick = {
+                                        modelText = m
                                         app.settings.setModel(s.provider, m)
                                         modelExpanded = false
                                     },
@@ -246,7 +254,7 @@ fun SettingsScreen() {
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         OutlinedButton(
-                            onClick = { vm.testConnection(s.provider, currentModel) },
+                            onClick = { vm.testConnection(s.provider, modelText) },
                             enabled = vmState.test !is SettingsViewModel.TestState.Running,
                         ) {
                             Text(stringResource(R.string.settings_test_connection))
