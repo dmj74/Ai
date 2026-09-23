@@ -1,0 +1,102 @@
+<resources>
+    <string name="app_name">Titanali</string>
+
+    <!-- bottom nav -->
+    <string name="nav_chat">Chat</string>
+    <string name="nav_titanali">Titanali</string>
+    <string name="nav_learn">Language</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- home / conversations -->
+    <string name="new_chat">New chat</string>
+    <string name="chat_empty_title">No conversations yet</string>
+    <string name="chat_empty_desc">Tap “New chat” and talk to AI in Persian or English. Answers include full analysis with global data.</string>
+    <string name="mode_general">Chat</string>
+    <string name="mode_titanali">Titanali</string>
+    <string name="mode_learn">Language</string>
+    <string name="delete">Delete</string>
+
+    <!-- chat -->
+    <string name="chat_new_title">New chat</string>
+    <string name="chat_hint">Write a message…</string>
+    <string name="chat_send">Send</string>
+    <string name="chat_stop">Stop</string>
+    <string name="back">Back</string>
+    <string name="close">Close</string>
+    <string name="open">Open</string>
+    <string name="need_ai_title">Connect an AI first</string>
+    <string name="need_ai_desc">In Settings, pick a free service (Groq, Gemini, OpenRouter, Hugging Face, Cerebras, Mistral or Ollama) and enter your free API key.</string>
+    <string name="unknown_error">Error reaching the AI service. Check provider and key in Settings.</string>
+
+    <!-- localized AI errors -->
+    <string name="err_auth">The API key is invalid or expired — paste a fresh free key in Settings.</string>
+    <string name="err_model">Model not found — pick another model in Settings.</string>
+    <string name="err_rate">Free rate limit reached — wait a bit or switch model/provider.</string>
+    <string name="err_server">The AI service returned a server error — try again in a moment.</string>
+    <string name="err_network">No internet connection — check your network.</string>
+    <string name="err_timeout">The service took too long to answer — try again.</string>
+    <string name="err_http">AI service error (code %d).</string>
+
+    <!-- titanali -->
+    <string name="titanali_name">Titanali</string>
+    <string name="titanali_ready">Ready, friend! What shall we do? ✨</string>
+    <string name="titanali_hint">Message Titanali…</string>
+    <string name="mode_text">Text</string>
+    <string name="mode_voice">Voice</string>
+    <string name="voice_start">Start voice conversation</string>
+    <string name="voice_stop">Stop conversation</string>
+    <string name="voice_listening">Listening…</string>
+    <string name="voice_thinking">Thinking…</string>
+    <string name="voice_speaking">Speaking…</string>
+    <string name="voice_cancel">Cancel</string>
+    <string name="voice_mic_permission">Voice chat needs microphone permission.</string>
+    <string name="voice_no_speech">Nothing heard; please try again.</string>
+    <string name="voice_unavailable">No speech recognition service is installed on this device.</string>
+
+    <!-- learn -->
+    <string name="learn_title">Language Learning</string>
+    <string name="learn_pick">Choose a language</string>
+    <string name="learn_daily">Word of the day</string>
+    <string name="learn_show_meaning">Show meaning</string>
+    <string name="learn_grammar">Grammar</string>
+    <string name="learn_vocab">Vocabulary</string>
+    <string name="learn_vocab_hint">Tap the card to see the meaning</string>
+    <string name="learn_known">Learned</string>
+    <string name="learn_practice">Conversation practice with AI</string>
+    <string name="learn_practice_back">Back to lesson</string>
+    <string name="learn_practice_hint">Write in the target language; the AI teacher answers and corrects your mistakes.</string>
+
+    <!-- settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_ai_title">AI connection (free)</string>
+    <string name="settings_provider">Choose provider</string>
+    <string name="settings_api_key">API key</string>
+    <string name="settings_api_key_hint">Enter your free API key…</string>
+    <string name="settings_model">Model</string>
+    <string name="settings_ollama_host">Ollama address</string>
+    <string name="settings_ollama_hint">Emulator: http://10.0.2.2:11434 — real phone: your PC IP (e.g. http://192.168.1.10:11434)</string>
+    <string name="settings_test_connection">Test connection</string>
+    <string name="settings_testing">Testing…</string>
+    <string name="settings_test_ok">Connected — the service answered ✅</string>
+    <string name="settings_refresh_models">Refresh model list</string>
+    <string name="settings_deep">Full analysis with global data</string>
+    <string name="settings_deep_desc">Structured answers: statistics, causes, trends, global comparison and conclusions.</string>
+    <string name="settings_voice_title">Voice &amp; speech</string>
+    <string name="settings_titanali_voice">Titanali reads answers aloud</string>
+    <string name="settings_tts_lang">Speech output language (TTS)</string>
+    <string name="settings_stt_lang">Listening language (microphone)</string>
+    <string name="settings_tts_rate">Speech rate</string>
+    <string name="settings_ui">App appearance</string>
+    <string name="settings_ui_lang">App language</string>
+    <string name="settings_ui_desc">Language change is applied immediately.</string>
+    <string name="settings_links">Where to get free keys</string>
+    <string name="settings_version">App version</string>
+    <string name="fa">Persian</string>
+    <string name="en">English</string>
+
+    <!-- misc -->
+    <string name="just_now">just now</string>
+    <string name="min_ago">%d min ago</string>
+    <string name="hour_ago">%d h ago</string>
+    <string name="cancel">Cancel</string>
+</resources>

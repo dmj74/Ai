@@ -1,0 +1,102 @@
+<resources>
+    <string name="app_name">تیتانالی</string>
+
+    <!-- bottom nav -->
+    <string name="nav_chat">چت</string>
+    <string name="nav_titanali">تیتانالی</string>
+    <string name="nav_learn">آموزش زبان</string>
+    <string name="nav_settings">تنظیمات</string>
+
+    <!-- home / conversations -->
+    <string name="new_chat">گفتگوی جدید</string>
+    <string name="chat_empty_title">هنوز گفتگویی نداری</string>
+    <string name="chat_empty_desc">روی «گفتگوی جدید» بزن و با هوش مصنوعی به فارسی یا انگلیسی صحبت کن. پاسخ‌ها با آنالیز کامل و داده‌های جهانی می‌آیند.</string>
+    <string name="mode_general">چت</string>
+    <string name="mode_titanali">تیتانالی</string>
+    <string name="mode_learn">زبان</string>
+    <string name="delete">حذف</string>
+
+    <!-- chat -->
+    <string name="chat_new_title">گفتگوی جدید</string>
+    <string name="chat_hint">پیام بنویس…</string>
+    <string name="chat_send">ارسال</string>
+    <string name="chat_stop">توقف</string>
+    <string name="back">بازگشت</string>
+    <string name="close">بستن</string>
+    <string name="open">باز کردن</string>
+    <string name="need_ai_title">اول یک هوش مصنوعی وصل کن</string>
+    <string name="need_ai_desc">از تنظیمات، یکی از سرویس‌های رایگان (Groq، Gemini، OpenRouter، Hugging Face، Cerebras، Mistral یا Ollama) را انتخاب و کلید رایگانش را وارد کن.</string>
+    <string name="unknown_error">خطا در ارتباط با سرویس هوش مصنوعی. از تنظیمات، سرویس و کلید را چک کن.</string>
+
+    <!-- localized AI errors -->
+    <string name="err_auth">کلید API نامعتبر یا منقضی است؛ از تنظیمات یک کلید رایگان جدید وارد کن.</string>
+    <string name="err_model">مدل پیدا نشد؛ از تنظیمات یک مدل دیگر انتخاب کن.</string>
+    <string name="err_rate">سقف درخواست رایگان پر شده؛ کمی صبر کن یا مدل/سرویس دیگری انتخاب کن.</string>
+    <string name="err_server">سرویس هوش مصنوعی موقتاً خطا دارد؛ چند لحظه بعد دوباره تلاش کن.</string>
+    <string name="err_network">اتصال اینترنت برقرار نیست؛ شبکه را چک کن.</string>
+    <string name="err_timeout">پاسخ سرویس خیلی طول کشید؛ دوباره تلاش کن.</string>
+    <string name="err_http">خطای سرویس هوش مصنوعی (کد %d).</string>
+
+    <!-- titanali -->
+    <string name="titanali_name">تیتانالی</string>
+    <string name="titanali_ready">آماده‌ام رفیق؛ بگو چیکار کنم؟ ✨</string>
+    <string name="titanali_hint">به تیتانالی پیام بده…</string>
+    <string name="mode_text">متنی</string>
+    <string name="mode_voice">صوتی</string>
+    <string name="voice_start">شروع مکالمه صوتی</string>
+    <string name="voice_stop">توقف مکالمه</string>
+    <string name="voice_listening">در حال شنیدن…</string>
+    <string name="voice_thinking">در حال فکر کردن…</string>
+    <string name="voice_speaking">در حال صحبت کردن…</string>
+    <string name="voice_cancel">لغو</string>
+    <string name="voice_mic_permission">برای مکالمه صوتی، اجازهٔ دسترسی به میکروفون لازم است.</string>
+    <string name="voice_no_speech">حرفی شنیده نشد؛ دوباره امتحان کن.</string>
+    <string name="voice_unavailable">روی این گوشی سرویس تشخیص گفتار نصب نیست.</string>
+
+    <!-- learn -->
+    <string name="learn_title">آموزش زبان</string>
+    <string name="learn_pick">یک زبان انتخاب کن</string>
+    <string name="learn_daily">کلمهٔ روز</string>
+    <string name="learn_show_meaning">نمایش معنی</string>
+    <string name="learn_grammar">گرامر</string>
+    <string name="learn_vocab">واژگان</string>
+    <string name="learn_vocab_hint">برای دیدن معنی روی کارت بزن</string>
+    <string name="learn_known">یاد گرفتم</string>
+    <string name="learn_practice">تمرین مکالمه با هوش مصنوعی</string>
+    <string name="learn_practice_back">بازگشت به درس</string>
+    <string name="learn_practice_hint">به زبانِ درس بنویس؛ معلم هوش مصنوعی جواب می‌دهد و اشتباهاتت را اصلاح می‌کند.</string>
+
+    <!-- settings -->
+    <string name="settings_title">تنظیمات</string>
+    <string name="settings_ai_title">اتصال هوش مصنوعی (رایگان)</string>
+    <string name="settings_provider">انتخاب سرویس</string>
+    <string name="settings_api_key">کلید API</string>
+    <string name="settings_api_key_hint">کلید رایگان خود را وارد کن…</string>
+    <string name="settings_model">مدل</string>
+    <string name="settings_ollama_host">نشانی Ollama</string>
+    <string name="settings_ollama_hint">امولاتور: http://10.0.2.2:11434 — گوشی واقعی: IP کامپیوتر (مثلاً http://192.168.1.10:11434)</string>
+    <string name="settings_test_connection">آزمایش اتصال</string>
+    <string name="settings_testing">در حال آزمایش…</string>
+    <string name="settings_test_ok">اتصال برقرار شد؛ سرویس پاسخ می‌دهد ✅</string>
+    <string name="settings_refresh_models">بروزرسانی فهرست مدل‌ها</string>
+    <string name="settings_deep">آنالیز کامل از داده‌های جهانی</string>
+    <string name="settings_deep_desc">پاسخ‌ها با ساختار کامل: آمار و ارقام، علل، روند، مقایسهٔ جهانی و نتیجه‌گیری.</string>
+    <string name="settings_voice_title">صوت و گفتار</string>
+    <string name="settings_titanali_voice">تیتانالی جواب‌ها را با صدا بخواند</string>
+    <string name="settings_tts_lang">زبان گفتار (خواندن پاسخ)</string>
+    <string name="settings_stt_lang">زبان شنود (میکروفون)</string>
+    <string name="settings_tts_rate">سرعت صدا</string>
+    <string name="settings_ui">ظاهر برنامه</string>
+    <string name="settings_ui_lang">زبان برنامه</string>
+    <string name="settings_ui_desc">تغییر زبان بلافاصله اعمال می‌شود.</string>
+    <string name="settings_links">مکان دریافت کلید رایگان</string>
+    <string name="settings_version">نسخهٔ برنامه</string>
+    <string name="fa">فارسی</string>
+    <string name="en">انگلیسی</string>
+
+    <!-- misc -->
+    <string name="just_now">همین حالا</string>
+    <string name="min_ago">%d دقیقه پیش</string>
+    <string name="hour_ago">%d ساعت پیش</string>
+    <string name="cancel">انصراف</string>
+</resources>
