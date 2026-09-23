@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -305,7 +306,9 @@ private fun PracticePanel(
                     )
                 }
             }
-            items(state.practiceMessages, key = { idx -> idx }) { m ->
+            // Index keys: identical messages (e.g. "ok" twice) are equal data
+            // classes, and duplicate keys crash LazyColumn.
+            itemsIndexed(state.practiceMessages, key = { idx, _ -> idx }) { _, m ->
                 MessageBubble(role = m.role, content = m.content)
             }
             if (state.practiceStreaming && state.practiceStream.isNotEmpty()) {
