@@ -12,12 +12,12 @@ import com.titanali.app.data.db.MessageEntity
 import com.titanali.app.data.repo.SettingsRepo
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -44,9 +44,12 @@ class TitanaliViewModel(app: Application) : AndroidViewModel(app) {
     private val _state = MutableStateFlow(TitanaliState())
     val state: StateFlow<TitanaliState> = _state.asStateFlow()
 
-    /** Emitted with the final assistant text that should be spoken aloud. */
-    private val _speak = MutableSharedFlow<String>(extraBufferCapacity = 1)
-    val speak: SharedFlow<String> = _speak.asSharedFlow()
+    /**
+     * A channel is used instead of a replay-less SharedFlow so a response is
+     * not lost while the TTS engine or the Compose collector is initializing.
+     */
+    private val _speak = Channel<String>(capacity = Channel.BUFFERED)
+    val speak: Flow<String> = _speak.receiveAsFlow()
 
     private var convId: Long = 0L
     private var sendJob: Job? = null
@@ -125,6 +128,7 @@ class TitanaliViewModel(app: Application) : AndroidViewModel(app) {
                 )
             }
             val buffer = StringBuilder()
+            var shouldSpeak = false
             try {
                 provider.streamChat(messages, model, settings.keyFor(s.provider))
                     .collect { token ->
@@ -137,8 +141,12 @@ class TitanaliViewModel(app: Application) : AndroidViewModel(app) {
                         MessageEntity(convId = convId, role = "assistant", content = finalText),
                     )
                     // Speak in voice mode, or whenever "Titanali reads answers aloud" is on.
-                    if (voiceMode || s.titanaliVoice) {
-                        _speak.tryEmit(finalText)
+                    shouldSpeak = voiceMode || s.titanaliVoice
+                    if (shouldSpeak) {
+                        if (voiceMode) {
+                            _state.update { it.copy(voiceState = VoiceState.Speaking) }
+                        }
+                        _speak.trySend(finalText)
                     }
                 }
             } catch (e: CancellationException) {
@@ -150,7 +158,11 @@ class TitanaliViewModel(app: Application) : AndroidViewModel(app) {
                     it.copy(
                         isStreaming = false,
                         streamText = "",
-                        voiceState = VoiceState.Idle,
+                        voiceState = if (shouldSpeak && voiceMode) {
+                            VoiceState.Speaking
+                        } else {
+                            VoiceState.Idle
+                        },
                         partialText = "",
                     )
                 }
@@ -164,5 +176,10 @@ class TitanaliViewModel(app: Application) : AndroidViewModel(app) {
 
     fun dismissError() {
         _state.update { it.copy(error = null) }
+    }
+
+    override fun onCleared() {
+        _speak.close()
+        super.onCleared()
     }
 }

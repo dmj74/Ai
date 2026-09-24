@@ -173,7 +173,13 @@ fun TitanaliScreen(navController: NavHostController) {
 
     DisposableEffect(Unit) {
         tts.onReady = { ok ->
-            if (!ok) ttsAvailable = false
+            if (!ok) {
+                ttsAvailable = false
+                notice(context.getString(R.string.voice_tts_unavailable))
+            }
+        }
+        tts.onError = {
+            notice(context.getString(R.string.voice_tts_error))
         }
         tts.init()
         tts.stateChanged = { speaking ->
@@ -189,10 +195,12 @@ fun TitanaliScreen(navController: NavHostController) {
 
     LaunchedEffect(Unit) {
         vm.speak.collect { text ->
-            tts.speak(text, s.ttsLanguage, s.ttsRate, onDone = {
+            val latest = app.settings.settings.value
+            tts.speak(text, latest.ttsLanguage, latest.ttsRate, onDone = {
                 if (voiceActive) {
+                    val current = app.settings.settings.value
                     vm.setVoiceState(VoiceState.Idle)
-                    listener.start(s.sttLanguage)
+                    listener.start(current.sttLanguage)
                 }
             })
         }

@@ -63,6 +63,8 @@
     <string name="voice_mic_permission">برای مکالمه صوتی، اجازهٔ دسترسی به میکروفون لازم است.</string>
     <string name="voice_no_speech">حرفی شنیده نشد؛ دوباره امتحان کن.</string>
     <string name="voice_unavailable">روی این گوشی سرویس تشخیص گفتار نصب نیست.</string>
+    <string name="voice_tts_unavailable">موتور تبدیل متن به گفتار در دسترس نیست؛ از تنظیمات گوشی یک موتور صوتی نصب یا فعال کن.</string>
+    <string name="voice_tts_error">پخش صدای پاسخ ممکن نشد؛ زبان گفتار را در تنظیمات بررسی کن.</string>
     <string name="voice_ai_error_stopped">ارتباط با هوش مصنوعی خطا داد؛ مکالمهٔ صوتی متوقف شد. دوباره تلاش کن.</string>
 
     <!-- learn -->
