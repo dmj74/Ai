@@ -81,7 +81,8 @@ fun HomeScreen(navController: NavHostController) {
                 contentAlignment = Alignment.Center,
             ) {
                 EmptyState(
-                    icon = painterResource(R.drawable.ic_launcher_foreground),
+                    icon = painterResource(R.drawable.titanali_avatar),
+                    iconIsImage = true,
                     title = stringResource(R.string.chat_empty_title),
                     desc = stringResource(R.string.chat_empty_desc),
                     actionLabel = stringResource(R.string.new_chat),

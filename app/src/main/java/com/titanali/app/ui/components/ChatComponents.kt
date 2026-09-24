@@ -161,6 +161,7 @@ fun EmptyState(
     desc: String,
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
+    iconIsImage: Boolean = false,
 ) {
     Column(
         modifier = Modifier
@@ -175,12 +176,21 @@ fun EmptyState(
                 .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                painter = icon,
-                contentDescription = null,
-                modifier = Modifier.size(36.dp),
-                tint = MaterialTheme.colorScheme.primary,
-            )
+            if (iconIsImage) {
+                Image(
+                    painter = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(58.dp).clip(CircleShape),
+                    contentScale = ContentScale.Crop,
+                )
+            } else {
+                Icon(
+                    painter = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(36.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
         Spacer(Modifier.height(14.dp))
         Text(
