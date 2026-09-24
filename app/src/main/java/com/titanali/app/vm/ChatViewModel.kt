@@ -129,7 +129,9 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
         sendJob?.cancel()
         val s = settings.settings.value
         val provider = tApp.provider(s.provider)
-        val systemPrompt = Prompts.general(s.deepAnalysis)
+        // Normal chat stays concise; detailed analysis belongs to the
+        // dedicated Analysis tab instead of being injected into every reply.
+        val systemPrompt = Prompts.general(false)
         val model = _state.value.selectedModel.ifBlank {
             settings.modelFor(s.provider, provider.defaultModels.firstOrNull().orEmpty())
         }

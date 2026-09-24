@@ -7,6 +7,12 @@ import org.junit.Test
 class PromptsTest {
 
     @Test
+    fun `analysis prompt is the only standalone deep-analysis prompt`() {
+        assertTrue(Prompts.analysis().contains("آنالیز کامل"))
+        assertFalse(Prompts.general(false).contains("آنالیز کامل"))
+    }
+
+    @Test
     fun `general prompt respects the deep analysis switch`() {
         assertTrue(Prompts.general(true).contains("آنالیز کامل"))
         assertFalse(Prompts.general(false).contains("آنالیز کامل"))
@@ -14,8 +20,8 @@ class PromptsTest {
 
     @Test
     fun `titanali persona is always present`() {
-        assertTrue(Prompts.titanali(true).contains("تیتانالی"))
-        assertTrue(Prompts.titanali(false, voiceMode = true).contains("تیتانالی"))
+        assertTrue(Prompts.titanali(true).contains("تیتانلی"))
+        assertTrue(Prompts.titanali(false, voiceMode = true).contains("تیتانلی"))
     }
 
     @Test

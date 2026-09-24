@@ -1,18 +1,19 @@
 <resources>
-    <string name="app_name">تیتانالی</string>
+    <string name="app_name">تیتانلی</string>
 
     <!-- bottom nav -->
     <string name="nav_chat">چت</string>
-    <string name="nav_titanali">تیتانالی</string>
+    <string name="nav_analysis">آنالیز</string>
+    <string name="nav_titanali">تیتانلی</string>
     <string name="nav_learn">آموزش زبان</string>
     <string name="nav_settings">تنظیمات</string>
 
     <!-- home / conversations -->
     <string name="new_chat">گفتگوی جدید</string>
     <string name="chat_empty_title">هنوز گفتگویی نداری</string>
-    <string name="chat_empty_desc">روی «گفتگوی جدید» بزن و با هوش مصنوعی به فارسی یا انگلیسی صحبت کن. پاسخ‌ها با آنالیز کامل و داده‌های جهانی می‌آیند.</string>
+    <string name="chat_empty_desc">روی «گفتگوی جدید» بزن و با هوش مصنوعی به فارسی یا انگلیسی صحبت کن. برای آنالیز کامل به بخش «آنالیز» برو.</string>
     <string name="mode_general">چت</string>
-    <string name="mode_titanali">تیتانالی</string>
+    <string name="mode_titanali">تیتانلی</string>
     <string name="mode_learn">زبان</string>
     <string name="delete">حذف</string>
 
@@ -21,6 +22,15 @@
     <string name="chat_hint">پیام بنویس…</string>
     <string name="chat_send">ارسال</string>
     <string name="chat_stop">توقف</string>
+
+    <!-- analysis -->
+    <string name="analysis_title">آنالیز</string>
+    <string name="analysis_desc">برای پاسخ‌های عمیق، آمار، روندها و مقایسه‌ها سؤال خود را اینجا بنویس.</string>
+    <string name="analysis_hint">موضوعی برای آنالیز بنویس…</string>
+    <string name="analysis_empty">هنوز آنالیزی انجام نشده است.</string>
+    <string name="analysis_running">در حال آماده‌سازی آنالیز…</string>
+    <string name="analysis_result">نتیجهٔ آنالیز</string>
+    <string name="analysis_clear">پاک کردن آنالیز</string>
     <string name="back">بازگشت</string>
     <string name="close">بستن</string>
     <string name="open">باز کردن</string>
@@ -39,9 +49,9 @@
     <string name="err_http">خطای سرویس هوش مصنوعی (کد %d).</string>
 
     <!-- titanali -->
-    <string name="titanali_name">تیتانالی</string>
+    <string name="titanali_name">تیتانلی</string>
     <string name="titanali_ready">آماده‌ام رفیق؛ بگو چیکار کنم؟ ✨</string>
-    <string name="titanali_hint">به تیتانالی پیام بده…</string>
+    <string name="titanali_hint">به تیتانلی پیام بده…</string>
     <string name="mode_text">متنی</string>
     <string name="mode_voice">صوتی</string>
     <string name="voice_start">شروع مکالمه صوتی</string>
@@ -84,10 +94,8 @@
     <string name="settings_testing">در حال آزمایش…</string>
     <string name="settings_test_ok">اتصال برقرار شد؛ سرویس پاسخ می‌دهد ✅</string>
     <string name="settings_refresh_models">بروزرسانی فهرست مدل‌ها</string>
-    <string name="settings_deep">آنالیز کامل از داده‌های جهانی</string>
-    <string name="settings_deep_desc">پاسخ‌ها با ساختار کامل: آمار و ارقام، علل، روند، مقایسهٔ جهانی و نتیجه‌گیری.</string>
     <string name="settings_voice_title">صوت و گفتار</string>
-    <string name="settings_titanali_voice">تیتانالی جواب‌ها را با صدا بخواند</string>
+    <string name="settings_titanali_voice">تیتانلی جواب‌ها را با صدا بخواند</string>
     <string name="settings_tts_lang">زبان گفتار (خواندن پاسخ)</string>
     <string name="settings_stt_lang">زبان شنود (میکروفون)</string>
     <string name="settings_tts_rate">سرعت صدا</string>

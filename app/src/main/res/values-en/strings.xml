@@ -3,6 +3,7 @@
 
     <!-- bottom nav -->
     <string name="nav_chat">Chat</string>
+    <string name="nav_analysis">Analysis</string>
     <string name="nav_titanali">Titanali</string>
     <string name="nav_learn">Language</string>
     <string name="nav_settings">Settings</string>
@@ -10,7 +11,7 @@
     <!-- home / conversations -->
     <string name="new_chat">New chat</string>
     <string name="chat_empty_title">No conversations yet</string>
-    <string name="chat_empty_desc">Tap “New chat” and talk to AI in Persian or English. Answers include full analysis with global data.</string>
+    <string name="chat_empty_desc">Tap “New chat” and talk to AI in Persian or English. Use the Analysis tab for detailed research.</string>
     <string name="mode_general">Chat</string>
     <string name="mode_titanali">Titanali</string>
     <string name="mode_learn">Language</string>
@@ -21,6 +22,15 @@
     <string name="chat_hint">Write a message…</string>
     <string name="chat_send">Send</string>
     <string name="chat_stop">Stop</string>
+
+    <!-- analysis -->
+    <string name="analysis_title">Analysis</string>
+    <string name="analysis_desc">Ask here for deep answers with statistics, trends and comparisons.</string>
+    <string name="analysis_hint">Write a topic to analyze…</string>
+    <string name="analysis_empty">No analysis yet.</string>
+    <string name="analysis_running">Preparing analysis…</string>
+    <string name="analysis_result">Analysis result</string>
+    <string name="analysis_clear">Clear analysis</string>
     <string name="back">Back</string>
     <string name="close">Close</string>
     <string name="open">Open</string>
@@ -84,8 +94,6 @@
     <string name="settings_testing">Testing…</string>
     <string name="settings_test_ok">Connected — the service answered ✅</string>
     <string name="settings_refresh_models">Refresh model list</string>
-    <string name="settings_deep">Full analysis with global data</string>
-    <string name="settings_deep_desc">Structured answers: statistics, causes, trends, global comparison and conclusions.</string>
     <string name="settings_voice_title">Voice &amp; speech</string>
     <string name="settings_titanali_voice">Titanali reads answers aloud</string>
     <string name="settings_tts_lang">Speech output language (TTS)</string>

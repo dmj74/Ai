@@ -309,17 +309,6 @@ fun SettingsScreen() {
                 }
             }
 
-            item {
-                SwitchRow(
-                    title = stringResource(R.string.settings_deep),
-                    desc = stringResource(R.string.settings_deep_desc),
-                    checked = s.deepAnalysis,
-                    onChange = { checked ->
-                        app.settings.update { cur -> cur.copy(deepAnalysis = checked) }
-                    },
-                )
-            }
-
             item { SectionTitle(stringResource(R.string.settings_voice_title)) }
 
             item {

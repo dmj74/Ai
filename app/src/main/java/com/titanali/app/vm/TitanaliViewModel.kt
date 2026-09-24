@@ -102,7 +102,9 @@ class TitanaliViewModel(app: Application) : AndroidViewModel(app) {
         val s = settings.settings.value
         val provider = tApp.provider(s.provider)
         val model = settings.modelFor(s.provider, provider.defaultModels.firstOrNull().orEmpty())
-        val system = Prompts.titanali(s.deepAnalysis, voiceMode = voiceMode)
+        // Titanali is a conversational character; long analysis is available
+        // in the dedicated Analysis tab and is not forced into chat/voice.
+        val system = Prompts.titanali(false, voiceMode = voiceMode)
         sendJob = viewModelScope.launch {
             if (convId == 0L) {
                 convId = convDao.insert(

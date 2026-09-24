@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.School
@@ -26,6 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.titanali.app.R
+import com.titanali.app.ui.screens.AnalysisScreen
 import com.titanali.app.ui.screens.ChatScreen
 import com.titanali.app.ui.screens.HomeScreen
 import com.titanali.app.ui.screens.LearnScreen
@@ -33,7 +35,7 @@ import com.titanali.app.ui.screens.LessonScreen
 import com.titanali.app.ui.screens.SettingsScreen
 import com.titanali.app.ui.screens.TitanaliScreen
 
-private val TOP_ROUTES = listOf("home", "titanali", "learn", "settings")
+private val TOP_ROUTES = listOf("home", "analysis", "titanali", "learn", "settings")
 
 @Composable
 fun AppNav() {
@@ -53,6 +55,15 @@ fun AppNav() {
                         },
                         icon = { Icon(Icons.Filled.Chat, contentDescription = null) },
                         label = { Text(stringResource(R.string.nav_chat)) },
+                        alwaysShowLabel = true,
+                    )
+                    NavigationBarItem(
+                        selected = currentRoute == "analysis",
+                        onClick = {
+                            if (currentRoute != "analysis") navController.navigate("analysis") { launchSingleTop = true }
+                        },
+                        icon = { Icon(Icons.Filled.Analytics, contentDescription = null) },
+                        label = { Text(stringResource(R.string.nav_analysis)) },
                         alwaysShowLabel = true,
                     )
                     NavigationBarItem(
@@ -90,6 +101,9 @@ fun AppNav() {
             NavHost(navController, startDestination = "home") {
                 composable("home") {
                     HomeScreen(navController = navController)
+                }
+                composable("analysis") {
+                    AnalysisScreen()
                 }
                 composable("titanali") {
                     TitanaliScreen(navController = navController)
