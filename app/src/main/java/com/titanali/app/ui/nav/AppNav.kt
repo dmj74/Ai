@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.School
@@ -62,7 +62,7 @@ fun AppNav() {
                         onClick = {
                             if (currentRoute != "analysis") navController.navigate("analysis") { launchSingleTop = true }
                         },
-                        icon = { Icon(Icons.Filled.Analytics, contentDescription = null) },
+                        icon = { Icon(Icons.Filled.Lightbulb, contentDescription = null) },
                         label = { Text(stringResource(R.string.nav_analysis)) },
                         alwaysShowLabel = true,
                     )

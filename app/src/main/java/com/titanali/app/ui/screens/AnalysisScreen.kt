@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -72,7 +72,7 @@ fun AnalysisScreen() {
                         enabled = !state.isAnalyzing && (state.result.isNotBlank() || state.error != null),
                     ) {
                         Icon(
-                            Icons.Filled.DeleteSweep,
+                            Icons.Filled.Delete,
                             contentDescription = stringResource(R.string.analysis_clear),
                         )
                     }
@@ -88,7 +88,7 @@ fun AnalysisScreen() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    Icons.Filled.Analytics,
+                    Icons.Filled.Lightbulb,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                 )
