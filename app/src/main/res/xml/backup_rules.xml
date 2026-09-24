@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Legacy (pre-API-31) full-backup rules: never back up the API keys. -->
+<full-backup-content>
+    <exclude
+        domain="sharedpref"
+        path="titanali_settings.xml" />
+</full-backup-content>
