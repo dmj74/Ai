@@ -82,17 +82,17 @@ class TtsManager(context: Context) {
 
         @Deprecated("Deprecated in Java")
         override fun onError(utteranceId: String?) = finish(utteranceId, failed = true)
+    }
 
-        private fun finish(utteranceId: String?, failed: Boolean) {
-            main.post {
-                if (utteranceId != currentId) return@post
-                currentId = null
-                stateChanged?.invoke(false)
-                if (failed) onError?.invoke()
-                val callback = pendingOnDone
-                pendingOnDone = null
-                callback?.invoke()
-            }
+    private fun finish(utteranceId: String?, failed: Boolean) {
+        main.post {
+            if (utteranceId != currentId) return@post
+            currentId = null
+            stateChanged?.invoke(false)
+            if (failed) onError?.invoke()
+            val callback = pendingOnDone
+            pendingOnDone = null
+            callback?.invoke()
         }
     }
 
